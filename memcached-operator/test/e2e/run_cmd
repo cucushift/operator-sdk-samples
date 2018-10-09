@@ -1,0 +1,66 @@
+// package management tool: dep
+// Add dependencies
+[root@localhost memcached-operator]# dep ensure
+
+// Login the cluster before the test run
+[root@localhost memcached-operator]# operator-sdk test -t ./test/e2e/
+ok  	github.com/example-inc/memcached-operator/test/e2e	89.405s
+[root@localhost memcached-operator]# operator-sdk test -t ./test/e2e/ --help
+Run End-To-End tests
+
+Usage:
+  operator-sdk test --test-location <path to tests directory> [flags]
+
+Flags:
+  -g, --global-init string       Path to manifest for Global resources (e.g. CRD manifest) (default "deploy/crd.yaml")
+  -f, --go-test-flags string     Additional flags to pass to go test
+  -h, --help                     help for test
+  -k, --kubeconfig string        Kubeconfig path (default "/root/.kube/config")
+  -n, --namespaced-init string   Path to manifest for per-test, namespaced resources (e.g. RBAC and Operator manifest)
+  -t, --test-location string     Location of test files (e.g. ./test/e2e/)
+
+// More details information
+[root@localhost memcached-operator]# operator-sdk test -t ./test/e2e/ --go-test-flags "-v"
+=== RUN   TestMemcached
+=== RUN   TestMemcached/memcached-group
+=== RUN   TestMemcached/memcached-group/Cluster
+=== RUN   TestMemcached/memcached-group/Cluster2
+--- PASS: TestMemcached (50.24s)
+    --- PASS: TestMemcached/memcached-group (0.00s)
+        --- PASS: TestMemcached/memcached-group/Cluster (24.23s)
+        	memcached_test.go:94: Initialized cluster resources
+        	wait_util.go:51: Deployment available (1/1)
+        	wait_util.go:51: Deployment available (3/3)
+        	wait_util.go:51: Deployment available (4/4)
+        --- PASS: TestMemcached/memcached-group/Cluster2 (28.62s)
+        	memcached_test.go:94: Initialized cluster resources
+        	wait_util.go:45: Waiting for full availability of memcached-operator deployment (0/1)
+        	wait_util.go:51: Deployment available (1/1)
+        	wait_util.go:51: Deployment available (3/3)
+        	wait_util.go:51: Deployment available (4/4)
+PASS
+ok  	github.com/example-inc/memcached-operator/test/e2e	82.700s
+
+
+// Parallel 8
+[root@localhost memcached-operator]# operator-sdk test -t ./test/e2e/ --go-test-flags "-v -parallel=8"
+=== RUN   TestMemcached
+=== RUN   TestMemcached/memcached-group
+=== RUN   TestMemcached/memcached-group/Cluster
+=== RUN   TestMemcached/memcached-group/Cluster2
+--- PASS: TestMemcached (43.44s)
+    --- PASS: TestMemcached/memcached-group (0.00s)
+        --- PASS: TestMemcached/memcached-group/Cluster2 (25.36s)
+        	memcached_test.go:94: Initialized cluster resources
+        	wait_util.go:45: Waiting for full availability of memcached-operator deployment (0/1)
+        	wait_util.go:51: Deployment available (1/1)
+        	wait_util.go:51: Deployment available (3/3)
+        	wait_util.go:51: Deployment available (4/4)
+        --- PASS: TestMemcached/memcached-group/Cluster (25.68s)
+        	memcached_test.go:94: Initialized cluster resources
+        	wait_util.go:45: Waiting for full availability of memcached-operator deployment (0/1)
+        	wait_util.go:51: Deployment available (1/1)
+        	wait_util.go:51: Deployment available (3/3)
+        	wait_util.go:51: Deployment available (4/4)
+PASS
+ok  	github.com/example-inc/memcached-operator/test/e2e	63.772s
