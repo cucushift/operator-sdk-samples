@@ -1,26 +1,13 @@
-// Copyright 2018 The Operator-SDK Authors
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 package e2e
-
+// Once MainEntry sets up the framework, it runs the remainder of the tests. First, make sure to import testing, the operator-sdk test 
+// framework (pkg/test) as well as your operator's libraries:
 import (
 	goctx "context"
 	"fmt"
 	"testing"
 	"time"
 
-	cachev1alpha1 "github.com/operator-framework/operator-sdk-samples/memcached-operator/pkg/apis/cache/v1alpha1"
+	cachev1alpha1 "github.com/example-inc/memcached-operator/pkg/apis/cache/v1alpha1"
 
 	framework "github.com/operator-framework/operator-sdk/pkg/test"
 	"github.com/operator-framework/operator-sdk/pkg/test/e2eutil"
@@ -34,6 +21,12 @@ var (
 )
 
 func TestMemcached(t *testing.T) {
+
+// ***************1**********************
+// The next step is to register your operator's scheme with the framework's dynamic client. To do this, pass the CRD's AddToScheme 
+// function and its List type object to the framework's AddToFrameworkScheme function.
+// For our example memcached-operator, it looks like this:
+
 	memcachedList := &cachev1alpha1.MemcachedList{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Memcached",
@@ -56,7 +49,12 @@ func memcachedScaleTest(t *testing.T, f *framework.Framework, ctx *framework.Tes
 	if err != nil {
 		return fmt.Errorf("could not get namespace: %v", err)
 	}
-	// create memcached custom resource
+// ***************2**********************
+// Now that the operator is ready, we can create a custom resource. 
+// Since the controller-runtime's dynamic client uses go contexts, make sure to import the go context library. 
+// In this example, we imported it as goctx:
+
+        // create memcached custom resource
 	exampleMemcached := &cachev1alpha1.Memcached{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Memcached",
@@ -77,6 +75,7 @@ func memcachedScaleTest(t *testing.T, f *framework.Framework, ctx *framework.Tes
 	ctx.AddFinalizerFn(func() error {
 		return f.DynamicClient.Delete(goctx.TODO(), exampleMemcached)
 	})
+
 	// wait for example-memcached to reach 3 replicas
 	err = e2eutil.WaitForDeployment(t, f.KubeClient, namespace, "example-memcached", 3, retryInterval, timeout)
 	if err != nil {
@@ -99,6 +98,10 @@ func memcachedScaleTest(t *testing.T, f *framework.Framework, ctx *framework.Tes
 
 func MemcachedCluster(t *testing.T) {
 	t.Parallel()
+
+// ***************3**********************
+// The next step is to create a TestCtx for the current test and defer its cleanup function:
+
 	ctx := framework.NewTestCtx(t)
 	defer ctx.Cleanup(t)
 	err := ctx.InitializeClusterResources()
