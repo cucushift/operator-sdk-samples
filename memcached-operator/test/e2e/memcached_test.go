@@ -1,6 +1,6 @@
 package e2e
-// Once MainEntry sets up the framework, it runs the remainder of the tests. First, make sure to import testing, the operator-sdk test 
-// framework (pkg/test) as well as your operator's libraries:
+// Once MainEntry sets up the framework, it runs the remainder of the tests. First, make sure to import testing, 
+// the operator-sdk test  framework (pkg/test) as well as your operator's libraries:
 import (
 	goctx "context"
 	"fmt"
@@ -23,8 +23,8 @@ var (
 func TestMemcached(t *testing.T) {
 
 // ***************1**********************
-// The next step is to register your operator's scheme with the framework's dynamic client. To do this, pass the CRD's AddToScheme 
-// function and its List type object to the framework's AddToFrameworkScheme function.
+// The next step is to register your operator's scheme with the framework's dynamic client. 	
+// To do this, pass the CRD's AddToScheme function and its List type object to the framework's AddToFrameworkScheme function.
 // For our example memcached-operator, it looks like this:
 
 	memcachedList := &cachev1alpha1.MemcachedList{
